@@ -1,28 +1,25 @@
-
 package com.blendah.backend.controller;
 
-import com.blendah.backend.model.MiniApp;
-import com.blendah.backend.repository.MiniAppRepository;
+import com.blendah.backend.dto.MiniAppResponse;
+import com.blendah.backend.service.MiniAppService;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/mini-apps")
 public class MiniAppController {
 
-    private final MiniAppRepository miniAppRepository;
+    private final MiniAppService miniAppService;
 
-    public MiniAppController(MiniAppRepository miniAppRepository) {
-        this.miniAppRepository = miniAppRepository;
+    public MiniAppController(MiniAppService miniAppService) {
+        this.miniAppService = miniAppService;
     }
 
     @GetMapping
-    public List<MiniApp> viewMiniAppListings() {
-        return miniAppRepository.findAllActive();
+    public List<MiniAppResponse> viewMiniAppListings(
+            @RequestParam(required = false) String search) {
+
+        return miniAppService.getMiniApps(search);
     }
 }
-

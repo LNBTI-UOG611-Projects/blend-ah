@@ -1,30 +1,47 @@
-
 package com.blendah.backend.model;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "miniapps", schema = "public")
 public class MiniApp {
 
-    private UUID appId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "app_id")
+    private Long appId;
+
+    @Column(name = "name", nullable = false)
     private String appName;
+
+    @Column(name = "description", columnDefinition = "text")
     private String description;
-    private String category;
+
+    @Column(name = "icon_url")
     private String iconUrl;
-    private AppStatus status;
+
+    @Column(name = "app_url", nullable = false)
+    private String appUrl;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "created_by")
+    private UUID createdBy;
+
+    @Column(name = "created_at")
     private OffsetDateTime createdAt;
 
-    public enum AppStatus {
-        ACTIVE, INACTIVE
-    }
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
 
-    // Getters and Setters
-
-    public UUID getAppId() {
+    public Long getAppId() {
         return appId;
     }
 
-    public void setAppId(UUID appId) {
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
@@ -44,14 +61,6 @@ public class MiniApp {
         this.description = description;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public String getIconUrl() {
         return iconUrl;
     }
@@ -60,12 +69,28 @@ public class MiniApp {
         this.iconUrl = iconUrl;
     }
 
-    public AppStatus getStatus() {
+    public String getAppUrl() {
+        return appUrl;
+    }
+
+    public void setAppUrl(String appUrl) {
+        this.appUrl = appUrl;
+    }
+
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(AppStatus status) {
+    public void setStatus(String status) {
         this.status = status;
+    }
+
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(UUID createdBy) {
+        this.createdBy = createdBy;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -75,5 +100,12 @@ public class MiniApp {
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
     }
-}
 
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+}
