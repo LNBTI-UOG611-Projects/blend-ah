@@ -1,13 +1,13 @@
-package com.blendah.backend;
+package com.blendah.backend.repository;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.blendah.backend.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@SpringBootApplication
-public class BackendApplication {
+import java.util.Optional;
+import java.util.UUID;
 
-	public static void main(String[] args) {
-		SpringApplication.run(BackendApplication.class, args);
-	}
-
+public interface UserRepository extends JpaRepository<User, UUID> {
+    Optional<User> findByEmail(String email);
+    Optional<User> findByEmailIgnoreCase(String email);
+    boolean existsByEmailIgnoreCase(String email);
 }
