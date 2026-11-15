@@ -1,17 +1,20 @@
+
 import { useEffect, useState } from 'react'
 import Header from '../components/layout/Header'
 import MiniAppFilters from '../components/miniapps/MiniAppFilters'
 import MiniAppTable from '../components/miniapps/MiniAppTable'
 import MiniAppDetailsModal from '../components/miniapps/MiniAppDetailsModal'
+import AddMiniAppModal from '../components/miniapps/AddMiniAppModal'
 import { getMiniApps } from '../services/miniAppService'
 import type { MiniApp } from '../types/miniApp'
-import './MiniAppManagement.css' 
+import './MiniAppManagement.css'
 
 export default function MiniAppManagement() {
   const [apps, setApps] = useState<MiniApp[]>([])
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('ALL')
   const [selectedApp, setSelectedApp] = useState<MiniApp | null>(null)
+  const [showAddModal, setShowAddModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -37,7 +40,9 @@ export default function MiniAppManagement() {
           )
         }
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+        }
       }
     }
 
@@ -83,8 +88,11 @@ export default function MiniAppManagement() {
             <p>View and manage applications in Blend-Ah.</p>
           </div>
 
-          <button className="primary-button" disabled
-            title="Coming soon">
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => setShowAddModal(true)}
+          >
             + Add Mini-App
           </button>
         </div>
@@ -135,9 +143,13 @@ export default function MiniAppManagement() {
           />
 
           {loading ? (
-            <p className="page-message">Loading mini-apps...</p>
+            <p className="page-message">
+              Loading mini-apps...
+            </p>
           ) : error ? (
-            <p className="page-message error-message">{error}</p>
+            <p className="page-message error-message">
+              {error}
+            </p>
           ) : (
             <>
               <MiniAppTable
@@ -157,6 +169,12 @@ export default function MiniAppManagement() {
         <MiniAppDetailsModal
           app={selectedApp}
           onClose={() => setSelectedApp(null)}
+        />
+      )}
+
+      {showAddModal && (
+        <AddMiniAppModal
+          onClose={() => setShowAddModal(false)}
         />
       )}
     </>
