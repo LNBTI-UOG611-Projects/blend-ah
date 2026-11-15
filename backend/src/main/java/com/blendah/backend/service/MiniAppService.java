@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Locale;
 
+import com.blendah.backend.dto.MiniAppCreateRequest;
+import java.time.OffsetDateTime;
+
 @Service
 public class MiniAppService {
 
@@ -38,6 +41,33 @@ public class MiniAppService {
                 .map(this::toResponse)
                 .toList();
     }
+
+
+public MiniAppResponse createMiniApp(MiniAppCreateRequest request) {
+
+    MiniApp app = new MiniApp();
+
+    app.setAppName(request.appName().trim());
+
+    app.setDescription(request.description());
+
+    app.setIconUrl(request.iconUrl());
+
+    app.setAppUrl(request.appUrl().trim());
+
+    // New mini-apps must start as unpublished.
+    app.setStatus("UNPUBLISHED");
+
+    // Set timestamps explicitly.
+    OffsetDateTime now = OffsetDateTime.now();
+    app.setCreatedAt(now);
+    app.setUpdatedAt(now);
+
+    MiniApp savedApp = repository.save(app);
+
+    return toResponse(savedApp);
+}
+
 
     private MiniAppResponse toResponse(MiniApp app) {
         return new MiniAppResponse(

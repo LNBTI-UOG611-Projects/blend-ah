@@ -1,0 +1,158 @@
+
+/* Add New Mini-App Modal */
+
+.add-mini-app-modal {
+  background: #ffffff;
+  width: min(100%, 560px);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* Header */
+
+.add-mini-app-modal .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 26px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.add-mini-app-modal .modal-header span {
+  color: #6d5ef5;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.add-mini-app-modal .modal-header h2 {
+  margin: 6px 0 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.add-mini-app-modal .close-button {
+  background: transparent;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+/* Form */
+
+.add-mini-app-modal .modal-body {
+  padding: 24px 26px;
+}
+
+.add-mini-app-modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.add-mini-app-modal .form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.add-mini-app-modal .form-group input,
+.add-mini-app-modal .form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  color: #111827;
+  background: #ffffff;
+}
+
+.add-mini-app-modal .form-group textarea {
+  resize: vertical;
+}
+
+.add-mini-app-modal .form-group input:focus,
+.add-mini-app-modal .form-group textarea:focus {
+  outline: none;
+  border-color: #3730a3;
+  box-shadow: 0 0 0 3px rgba(55, 48, 163, 0.12);
+}
+
+.add-mini-app-modal .form-group input[readonly] {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Validation message */
+
+.add-mini-app-modal .form-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin: 10px 0 0;
+}
+
+/* Footer buttons */
+
+.add-mini-app-modal .modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px 26px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.add-mini-app-modal .cancel-button {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-mini-app-modal .primary-button {
+  background: #3730a3;
+  color: #ffffff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-mini-app-modal .primary-button:hover {
+  background: #312e81;
+}
+
+/* Responsive */
+
+@media (max-width: 600px) {
+  .add-mini-app-modal {
+    max-height: 95vh;
+  }
+
+  .add-mini-app-modal .modal-header,
+  .add-mini-app-modal .modal-body,
+  .add-mini-app-modal .modal-footer {
+    padding: 18px;
+  }
+
+  .add-mini-app-modal .modal-header h2 {
+    font-size: 19px;
+  }
+
+  .add-mini-app-modal .modal-footer {
+    flex-direction: column-reverse;
+  }
+
+  .add-mini-app-modal .modal-footer button {
+    width: 100%;
+  }
+}
