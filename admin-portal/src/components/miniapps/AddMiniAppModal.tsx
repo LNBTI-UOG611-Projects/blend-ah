@@ -1,14 +1,23 @@
 
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
-import type { CreateMiniAppRequest } from '../../services/miniAppService'
+
 import './AddMiniAppModal.css'
+
+import {
+  createMiniApp,
+  type CreateMiniAppRequest,
+} from '../../services/miniAppService'
 
 type Props = {
   onClose: () => void
+  onCreated?: () => void | Promise<void>
 }
 
-export default function AddMiniAppModal({ onClose }: Props) {
+export default function AddMiniAppModal({
+  onClose,
+  onCreated,
+}: Props) {
   const [formData, setFormData] = useState<CreateMiniAppRequest>({
     appName: '',
     description: '',
@@ -17,10 +26,7 @@ export default function AddMiniAppModal({ onClose }: Props) {
   })
 
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-
-  // Enable only after backend admin authorization is ready.
-  const isSaveEnabled = false
+  const [isSaving, setIsSaving] = useState(false)
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -33,10 +39,9 @@ export default function AddMiniAppModal({ onClose }: Props) {
     }))
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
-    setSuccess(null)
 
     if (!formData.appName.trim()) {
       setError('Mini-App name is required.')
@@ -49,17 +54,17 @@ export default function AddMiniAppModal({ onClose }: Props) {
     }
 
     try {
-      const url = new URL(formData.appUrl.trim())
+      const appUrl = new URL(formData.appUrl.trim())
 
-      if (!['http:', 'https:'].includes(url.protocol)) {
+      if (!['http:', 'https:'].includes(appUrl.protocol)) {
         setError('App URL must use HTTP or HTTPS.')
         return
       }
 
       if (formData.iconUrl.trim()) {
-        const icon = new URL(formData.iconUrl.trim())
+        const iconUrl = new URL(formData.iconUrl.trim())
 
-        if (!['http:', 'https:'].includes(icon.protocol)) {
+        if (!['http:', 'https:'].includes(iconUrl.protocol)) {
           setError('Icon URL must use HTTP or HTTPS.')
           return
         }
@@ -69,15 +74,27 @@ export default function AddMiniAppModal({ onClose }: Props) {
       return
     }
 
-    if (!isSaveEnabled) {
-      setSuccess(
-        'Form validation passed. Database saving is pending backend authorization.'
-      )
-      return
-    }
+    setIsSaving(true)
 
-    // API submission will be connected after
-    // secure backend authorization is implemented.
+    try {
+      await createMiniApp({
+        appName: formData.appName.trim(),
+        description: formData.description.trim(),
+        iconUrl: formData.iconUrl.trim(),
+        appUrl: formData.appUrl.trim(),
+      })
+
+      await onCreated?.()
+      onClose()
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to save Mini-App. Please try again.'
+      )
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -100,6 +117,7 @@ export default function AddMiniAppModal({ onClose }: Props) {
             className="close-button"
             onClick={onClose}
             aria-label="Close form"
+            disabled={isSaving}
           >
             ×
           </button>
@@ -172,10 +190,6 @@ export default function AddMiniAppModal({ onClose }: Props) {
                 {error}
               </p>
             )}
-
-            {success && (
-              <p role="status">{success}</p>
-            )}
           </div>
 
           <div className="modal-footer">
@@ -183,6 +197,7 @@ export default function AddMiniAppModal({ onClose }: Props) {
               type="button"
               className="cancel-button"
               onClick={onClose}
+              disabled={isSaving}
             >
               Cancel
             </button>
@@ -190,8 +205,9 @@ export default function AddMiniAppModal({ onClose }: Props) {
             <button
               type="submit"
               className="primary-button"
+              disabled={isSaving}
             >
-              Add Mini-App
+              {isSaving ? 'Saving...' : 'Add Mini-App'}
             </button>
           </div>
         </form>
