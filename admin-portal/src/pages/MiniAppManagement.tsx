@@ -11,6 +11,8 @@ import EditMiniAppModal from '../components/miniapps/EditMiniAppModal'
 import {
   getMiniApps,
   updateMiniApp,
+  publishMiniApp,
+  deactivateMiniApp,
 } from '../services/miniAppService'
 
 import type { EditMiniAppData } from '../components/miniapps/EditMiniAppModal'
@@ -33,6 +35,14 @@ export default function MiniAppManagement() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Track Mini App currently being updated
+  const [updatingAppId, setUpdatingAppId] =
+    useState<number | null>(null)
+
+  const [actionError, setActionError] =
+    useState<string | null>(null)
+
+  // Load Mini Apps
   async function loadApps() {
     setLoading(true)
     setError(null)
@@ -56,6 +66,7 @@ export default function MiniAppManagement() {
     void loadApps().catch(() => {})
   }, [])
 
+  // Modify Mini App
   async function handleUpdateMiniApp(
     appId: number,
     data: EditMiniAppData
@@ -69,6 +80,71 @@ export default function MiniAppManagement() {
     )
   }
 
+  // Publish Mini App
+  async function handlePublish(app: MiniApp) {
+    if (updatingAppId !== null) return
+
+    const confirmed = window.confirm(
+      `Are you sure you want to publish "${app.appName}"?`
+    )
+
+    if (!confirmed) return
+
+    setUpdatingAppId(app.appId)
+    setActionError(null)
+
+    try {
+      const updatedApp = await publishMiniApp(app.appId)
+
+      setApps((previous) =>
+        previous.map((item) =>
+          item.appId === app.appId ? updatedApp : item
+        )
+      )
+    } catch (err) {
+      setActionError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to publish mini-app'
+      )
+    } finally {
+      setUpdatingAppId(null)
+    }
+  }
+
+  // Deactivate Mini App
+  async function handleDeactivate(app: MiniApp) {
+    if (updatingAppId !== null) return
+
+    const confirmed = window.confirm(
+      `Are you sure you want to deactivate "${app.appName}"?`
+    )
+
+    if (!confirmed) return
+
+    setUpdatingAppId(app.appId)
+    setActionError(null)
+
+    try {
+      const updatedApp = await deactivateMiniApp(app.appId)
+
+      setApps((previous) =>
+        previous.map((item) =>
+          item.appId === app.appId ? updatedApp : item
+        )
+      )
+    } catch (err) {
+      setActionError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to deactivate mini-app'
+      )
+    } finally {
+      setUpdatingAppId(null)
+    }
+  }
+
+  // Search and Status Filter
   const filteredApps = apps.filter((app) => {
     const query = search.trim().toLowerCase()
 
@@ -82,6 +158,7 @@ export default function MiniAppManagement() {
     return matchesSearch && matchesStatus
   })
 
+  // Statistics
   const publishedCount = apps.filter(
     (app) => app.status === 'PUBLISHED'
   ).length
@@ -158,6 +235,15 @@ export default function MiniAppManagement() {
             onStatusChange={setStatus}
           />
 
+          {actionError && (
+            <p
+              className="page-message error-message"
+              role="alert"
+            >
+              {actionError}
+            </p>
+          )}
+
           {loading ? (
             <p className="page-message">
               Loading mini-apps...
@@ -172,6 +258,9 @@ export default function MiniAppManagement() {
                 apps={filteredApps}
                 onViewDetails={setSelectedApp}
                 onEdit={setEditingApp}
+                onPublish={handlePublish}
+                onDeactivate={handleDeactivate}
+                updatingAppId={updatingAppId}
               />
 
               <div className="table-footer">

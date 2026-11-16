@@ -1,5 +1,7 @@
+
 package com.blendah.backend.service;
 
+import com.blendah.backend.dto.MiniAppCreateRequest;
 import com.blendah.backend.dto.MiniAppResponse;
 import com.blendah.backend.dto.MiniAppUpdateRequest;
 import com.blendah.backend.model.MiniApp;
@@ -9,17 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Locale;
-
-import com.blendah.backend.dto.MiniAppCreateRequest;
-import java.time.OffsetDateTime;
-
-
-import com.blendah.backend.dto.MiniAppUpdateRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
 
 @Service
 public class MiniAppService {
@@ -30,6 +24,7 @@ public class MiniAppService {
         this.repository = repository;
     }
 
+    // View Mini App Listing
     public List<MiniAppResponse> getMiniApps(String search) {
 
         String query = search == null
@@ -40,7 +35,8 @@ public class MiniAppService {
                 .stream()
                 .filter(app ->
                     query.isEmpty()
-                    || app.getAppName().toLowerCase(Locale.ROOT)
+                    || app.getAppName()
+                        .toLowerCase(Locale.ROOT)
                         .contains(query)
                     || (app.getDescription() != null
                         && app.getDescription()
@@ -51,59 +47,95 @@ public class MiniAppService {
                 .toList();
     }
 
+    // Add New Mini App
+    public MiniAppResponse createMiniApp(
+            MiniAppCreateRequest request) {
 
-public MiniAppResponse createMiniApp(MiniAppCreateRequest request) {
+        MiniApp app = new MiniApp();
 
-    MiniApp app = new MiniApp();
+        app.setAppName(request.appName().trim());
+        app.setDescription(request.description());
+        app.setIconUrl(request.iconUrl());
+        app.setAppUrl(request.appUrl().trim());
+        app.setStatus("UNPUBLISHED");
 
-    app.setAppName(request.appName().trim());
+        OffsetDateTime now = OffsetDateTime.now();
 
-    app.setDescription(request.description());
+        app.setCreatedAt(now);
+        app.setUpdatedAt(now);
 
-    app.setIconUrl(request.iconUrl());
+        MiniApp savedApp = repository.save(app);
 
-    app.setAppUrl(request.appUrl().trim());
+        return toResponse(savedApp);
+    }
 
-    // New mini-apps must start as unpublished.
-    app.setStatus("UNPUBLISHED");
+    // Modify Existing Mini App
+    public MiniAppResponse updateMiniApp(
+            Long id,
+            MiniAppUpdateRequest request) {
 
-    // Set timestamps explicitly.
-    OffsetDateTime now = OffsetDateTime.now();
-    app.setCreatedAt(now);
-    app.setUpdatedAt(now);
+        MiniApp app = findMiniApp(id);
 
-    MiniApp savedApp = repository.save(app);
+        app.setAppName(request.appName().trim());
+        app.setDescription(request.description());
+        app.setIconUrl(request.iconUrl());
+        app.setAppUrl(request.appUrl().trim());
+        app.setUpdatedAt(OffsetDateTime.now());
 
-    return toResponse(savedApp);
-}
+        return toResponse(repository.save(app));
+    }
 
-public MiniAppResponse updateMiniApp(
-        Long id,
-        MiniAppUpdateRequest request) {
+    // Publish Mini App
+    public MiniAppResponse publishMiniApp(Long id) {
 
-    MiniApp app = repository.findById(id)
-            .orElseThrow(() ->
-                new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Mini App not found"
-                )
+        MiniApp app = findMiniApp(id);
+
+        if (!"UNPUBLISHED".equals(app.getStatus())) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Only unpublished Mini Apps can be published"
             );
+        }
 
-    app.setAppName(request.appName().trim());
-    app.setDescription(request.description());
-    app.setIconUrl(request.iconUrl());
-    app.setAppUrl(request.appUrl().trim());
+        app.setStatus("PUBLISHED");
+        app.setUpdatedAt(OffsetDateTime.now());
 
-    app.setUpdatedAt(OffsetDateTime.now());
+        return toResponse(repository.save(app));
+    }
 
-    MiniApp updatedApp = repository.save(app);
+    // Deactivate Mini App
+    public MiniAppResponse deactivateMiniApp(Long id) {
 
-    return toResponse(updatedApp);
-}
+        MiniApp app = findMiniApp(id);
 
+        if (!"PUBLISHED".equals(app.getStatus())) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Only published Mini Apps can be deactivated"
+            );
+        }
 
+        app.setStatus("INACTIVE");
+        app.setUpdatedAt(OffsetDateTime.now());
 
+        return toResponse(repository.save(app));
+    }
+
+    // Find Mini App by ID
+    private MiniApp findMiniApp(Long id) {
+
+        return repository.findById(id)
+                .orElseThrow(() ->
+                    new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Mini App not found"
+                    )
+                );
+    }
+
+    // Convert Entity to Response DTO
     private MiniAppResponse toResponse(MiniApp app) {
+
         return new MiniAppResponse(
                 app.getAppId(),
                 app.getAppName(),
