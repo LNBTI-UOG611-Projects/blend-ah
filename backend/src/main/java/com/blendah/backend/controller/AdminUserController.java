@@ -32,5 +32,10 @@ public class AdminUserController {
     @PatchMapping("/{userId}/deactivate")
     public AdminUserResponse deactivateUser(@PathVariable UUID userId) {
         return adminUserService.deactivateUser(userId);
-}
+    }
+
+    @PatchMapping("/{userId}/activate")
+    public AdminUserResponse activateUser(@PathVariable UUID userId) {
+        return adminUserService.activateUser(userId);
+    }
 }

@@ -119,3 +119,24 @@
   cursor: not-allowed;
 }
 
+
+.users-page .activate-btn {
+  margin-left: 8px;
+  padding: 8px 12px;
+  border: 1px solid #bbf7d0;
+  border-radius: 7px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.users-page .activate-btn:hover {
+  background: #dcfce7;
+}
+
+.users-page .activate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react'
-import { getUsers, deactivateUser  } from '../services/userService'
+import { getUsers, deactivateUser, activateUser  } from '../services/userService'
 import UserDetailsModal from '../components/users/UserDetailsModal'
 import type { User } from '../types/user'
 import './UserManagement.css'
@@ -56,6 +56,37 @@ async function handleDeactivate(user: User) {
     setUpdatingUserId(null)
   }
 }
+
+async function handleActivate(user: User) {
+  if (!window.confirm(
+    `Are you sure you want to activate ${user.fullName}?`
+  )) {
+    return
+  }
+
+  setUpdatingUserId(user.userId)
+
+  try {
+    const updatedUser = await activateUser(user.userId)
+
+    setUsers(previous =>
+      previous.map(existing =>
+        existing.userId === updatedUser.userId
+          ? updatedUser
+          : existing
+      )
+    )
+  } catch (error) {
+    alert(
+      error instanceof Error
+        ? error.message
+        : 'Unable to activate user'
+    )
+  } finally {
+    setUpdatingUserId(null)
+  }
+}
+
 
 
   return (
@@ -138,6 +169,21 @@ async function handleDeactivate(user: User) {
                         : 'Deactivate'}
                     </button>
                 )}
+
+
+              {!user.userStatus && (
+                <button
+                  type="button"
+                  className="activate-btn"
+                  disabled={updatingUserId === user.userId}
+                  onClick={() => handleActivate(user)}
+                >
+                  {updatingUserId === user.userId
+                    ? 'Activating...'
+                    : 'Activate'}
+                </button>
+              )}
+
 
                   </td>
                 </tr>
