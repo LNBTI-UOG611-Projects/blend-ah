@@ -56,5 +56,42 @@ public class MiniAppController {
 
         return ResponseEntity.ok(updated);
     }
+
+
+    // Publish Mini App
+    @PatchMapping("/{id}/publish")
+    public ResponseEntity<MiniAppResponse> publishMiniApp(
+            @PathVariable Long id) {
+
+        MiniAppResponse published =
+                miniAppService.publishMiniApp(id);
+
+        return ResponseEntity.ok(published);
+    }
+
+    // Deactivate Mini App
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<MiniAppResponse> deactivateMiniApp(
+            @PathVariable Long id) {
+
+        MiniAppResponse deactivated =
+                miniAppService.deactivateMiniApp(id);
+
+        return ResponseEntity.ok(deactivated);
+    }
+
+
+    // Activate Mini App
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<MiniAppResponse> activateMiniApp(
+            @PathVariable Long id) {
+
+        MiniAppResponse activated =
+                miniAppService.activateMiniApp(id);
+
+        return ResponseEntity.ok(activated);
+    }
+
+
   
 }

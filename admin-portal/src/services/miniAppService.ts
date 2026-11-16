@@ -80,5 +80,71 @@ export async function updateMiniApp(
   }
 
   return response.json() as Promise<MiniApp>
+
 }
+ 
+ // Publish Mini App
+export async function publishMiniApp(
+  appId: number
+): Promise<MiniApp> {
+  const response = await fetch(
+    `/api/mini-apps/${appId}/publish`,
+    {
+      method: 'PATCH',
+      credentials: 'same-origin',
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to publish mini-app (${response.status})`
+    )
+  }
+
+  return response.json() as Promise<MiniApp>
+}
+
+// Deactivate Mini App
+export async function deactivateMiniApp(
+  appId: number
+): Promise<MiniApp> {
+  const response = await fetch(
+    `/api/mini-apps/${appId}/deactivate`,
+    {
+      method: 'PATCH',
+      credentials: 'same-origin',
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to deactivate mini-app (${response.status})`
+    )
+  }
+
+  return response.json() as Promise<MiniApp>
+}
+
+
+// Activate Mini App
+export async function activateMiniApp(
+  appId: number
+): Promise<MiniApp> {
+  const response = await fetch(
+    `/api/mini-apps/${appId}/activate`,
+    {
+      method: 'PATCH',
+      credentials: 'same-origin',
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to activate mini-app (${response.status})`
+    )
+  }
+
+  return response.json() as Promise<MiniApp>
+}
+
 

@@ -1,16 +1,25 @@
 
 import type { MiniApp } from '../../types/miniApp'
 
+
 type Props = {
   apps: MiniApp[]
   onViewDetails: (app: MiniApp) => void
   onEdit: (app: MiniApp) => void
+  onPublish: (app: MiniApp) => void
+  onDeactivate: (app: MiniApp) => void
+  onActivate: (app: MiniApp) => void
+  updatingAppId?: number | null
 }
 
 export default function MiniAppTable({
   apps,
   onViewDetails,
   onEdit,
+  onPublish,
+  onDeactivate,
+  onActivate,
+  updatingAppId = null,
 }: Props) {
   return (
     <div className="table-wrapper">
@@ -27,6 +36,9 @@ export default function MiniAppTable({
         <tbody>
           {apps.map((app) => {
             const published = app.status === 'PUBLISHED'
+            const unpublished = app.status === 'UNPUBLISHED'
+            const inactive = app.status === 'INACTIVE'
+            const updating = updatingAppId === app.appId
 
             return (
               <tr key={app.appId}>
@@ -91,14 +103,39 @@ export default function MiniAppTable({
                       Edit
                     </button>
 
-                    <button
-                      type="button"
-                      className="action-button"
-                      disabled
-                      title="Coming soon"
-                    >
-                      {published ? 'Disable' : 'Enable'}
-                    </button>
+                    {unpublished && (
+                      <button
+                        type="button"
+                        className="action-button"
+                        onClick={() => onPublish(app)}
+                        disabled={updating}
+                      >
+                        {updating ? 'Publishing...' : 'Publish'}
+                      </button>
+                    )}
+
+                    {published && (
+                      <button
+                        type="button"
+                        className="action-button"
+                        onClick={() => onDeactivate(app)}
+                        disabled={updating}
+                      >
+                        {updating ? 'Deactivating...' : 'Deactivate'}
+                      </button>
+                    )}
+
+                    
+                      {inactive && (
+                        <button
+                          type="button"
+                          className="action-button"
+                          onClick={() => onActivate(app)}
+                          disabled={updating}
+                >
+                {updating ? 'Activating...' : 'Activate'}
+          </button>
+        )}    
                   </div>
                 </td>
               </tr>
