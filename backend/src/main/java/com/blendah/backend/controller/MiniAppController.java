@@ -80,5 +80,18 @@ public class MiniAppController {
         return ResponseEntity.ok(deactivated);
     }
 
+
+    // Activate Mini App
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<MiniAppResponse> activateMiniApp(
+            @PathVariable Long id) {
+
+        MiniAppResponse activated =
+                miniAppService.activateMiniApp(id);
+
+        return ResponseEntity.ok(activated);
+    }
+
+
   
 }

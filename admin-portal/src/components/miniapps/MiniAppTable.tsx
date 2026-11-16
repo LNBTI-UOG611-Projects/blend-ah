@@ -1,12 +1,14 @@
 
 import type { MiniApp } from '../../types/miniApp'
 
+
 type Props = {
   apps: MiniApp[]
   onViewDetails: (app: MiniApp) => void
   onEdit: (app: MiniApp) => void
   onPublish: (app: MiniApp) => void
   onDeactivate: (app: MiniApp) => void
+  onActivate: (app: MiniApp) => void
   updatingAppId?: number | null
 }
 
@@ -16,6 +18,7 @@ export default function MiniAppTable({
   onEdit,
   onPublish,
   onDeactivate,
+  onActivate,
   updatingAppId = null,
 }: Props) {
   return (
@@ -34,6 +37,7 @@ export default function MiniAppTable({
           {apps.map((app) => {
             const published = app.status === 'PUBLISHED'
             const unpublished = app.status === 'UNPUBLISHED'
+            const inactive = app.status === 'INACTIVE'
             const updating = updatingAppId === app.appId
 
             return (
@@ -120,6 +124,18 @@ export default function MiniAppTable({
                         {updating ? 'Deactivating...' : 'Deactivate'}
                       </button>
                     )}
+
+                    
+                      {inactive && (
+                        <button
+                          type="button"
+                          className="action-button"
+                          onClick={() => onActivate(app)}
+                          disabled={updating}
+                >
+                {updating ? 'Activating...' : 'Activate'}
+          </button>
+        )}    
                   </div>
                 </td>
               </tr>

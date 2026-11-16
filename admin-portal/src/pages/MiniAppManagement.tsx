@@ -13,6 +13,7 @@ import {
   updateMiniApp,
   publishMiniApp,
   deactivateMiniApp,
+  activateMiniApp,
 } from '../services/miniAppService'
 
 import type { EditMiniAppData } from '../components/miniapps/EditMiniAppModal'
@@ -144,6 +145,38 @@ export default function MiniAppManagement() {
     }
   }
 
+  // Activate Mini App
+  async function handleActivate(app: MiniApp) {
+    if (updatingAppId !== null) return
+
+    const confirmed = window.confirm(
+      `Are you sure you want to activate "${app.appName}"?`
+    )
+
+    if (!confirmed) return
+
+    setUpdatingAppId(app.appId)
+    setActionError(null)
+
+    try {
+      const updatedApp = await activateMiniApp(app.appId)
+
+      setApps((previous) =>
+        previous.map((item) =>
+          item.appId === app.appId ? updatedApp : item
+        )
+      )
+    } catch (err) {
+      setActionError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to activate mini-app'
+      )
+    } finally {
+      setUpdatingAppId(null)
+    }
+  }
+  
   // Search and Status Filter
   const filteredApps = apps.filter((app) => {
     const query = search.trim().toLowerCase()
@@ -260,6 +293,7 @@ export default function MiniAppManagement() {
                 onEdit={setEditingApp}
                 onPublish={handlePublish}
                 onDeactivate={handleDeactivate}
+                onActivate={handleActivate}
                 updatingAppId={updatingAppId}
               />
 

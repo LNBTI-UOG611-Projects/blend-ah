@@ -121,6 +121,26 @@ public class MiniAppService {
         return toResponse(repository.save(app));
     }
 
+
+    // Activate an inactive Mini App
+    public MiniAppResponse activateMiniApp(Long id) {
+
+        MiniApp app = findMiniApp(id);
+
+        if (!"INACTIVE".equals(app.getStatus())) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "Only inactive Mini Apps can be activated"
+            );
+        }
+
+        app.setStatus("PUBLISHED");
+        app.setUpdatedAt(OffsetDateTime.now());
+
+        return toResponse(repository.save(app));
+    }
+
+
     // Find Mini App by ID
     private MiniApp findMiniApp(Long id) {
 

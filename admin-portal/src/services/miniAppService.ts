@@ -125,3 +125,26 @@ export async function deactivateMiniApp(
   return response.json() as Promise<MiniApp>
 }
 
+
+// Activate Mini App
+export async function activateMiniApp(
+  appId: number
+): Promise<MiniApp> {
+  const response = await fetch(
+    `/api/mini-apps/${appId}/activate`,
+    {
+      method: 'PATCH',
+      credentials: 'same-origin',
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to activate mini-app (${response.status})`
+    )
+  }
+
+  return response.json() as Promise<MiniApp>
+}
+
+
