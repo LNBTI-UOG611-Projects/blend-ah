@@ -26,3 +26,17 @@ export async function getUserById(userId: string): Promise<User> {
 
   return response.json() as Promise<User>
 }
+
+
+export async function deactivateUser(userId: string): Promise<User> {
+  const response = await fetch(
+    `/api/admin/users/${encodeURIComponent(userId)}/deactivate`,
+    { method: 'PATCH' }
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to deactivate user')
+  }
+
+  return response.json() as Promise<User>
+}

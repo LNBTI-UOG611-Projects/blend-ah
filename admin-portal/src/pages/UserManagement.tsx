@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react'
-import { getUsers } from '../services/userService'
+import { getUsers, deactivateUser  } from '../services/userService'
 import UserDetailsModal from '../components/users/UserDetailsModal'
 import type { User } from '../types/user'
 import './UserManagement.css'
@@ -11,6 +11,7 @@ export default function UserManagement() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null)
 
   useEffect(() => {
     getUsers()
@@ -24,6 +25,38 @@ export default function UserManagement() {
       .toLowerCase()
       .includes(search.toLowerCase())
   )
+
+
+async function handleDeactivate(user: User) {
+  if (!window.confirm(
+    `Are you sure you want to deactivate ${user.fullName}?`
+  )) {
+    return
+  }
+
+  setUpdatingUserId(user.userId)
+
+  try {
+    const updatedUser = await deactivateUser(user.userId)
+
+    setUsers(previous =>
+      previous.map(existing =>
+        existing.userId === updatedUser.userId
+          ? updatedUser
+          : existing
+      )
+    )
+  } catch (error) {
+    alert(
+      error instanceof Error
+        ? error.message
+        : 'Unable to deactivate user'
+    )
+  } finally {
+    setUpdatingUserId(null)
+  }
+}
+
 
   return (
     <div className="users-page">
@@ -91,6 +124,21 @@ export default function UserManagement() {
                     >
                       View Details
                     </button>
+
+
+              {user.userStatus && (
+                    <button
+                      type="button"
+                      className="deactivate-btn"
+                      disabled={updatingUserId === user.userId}
+                      onClick={() => handleDeactivate(user)}
+                    >
+                      {updatingUserId === user.userId
+                        ? 'Deactivating...'
+                        : 'Deactivate'}
+                    </button>
+                )}
+
                   </td>
                 </tr>
               ))}

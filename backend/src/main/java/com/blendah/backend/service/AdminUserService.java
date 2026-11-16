@@ -73,4 +73,32 @@ public class AdminUserService {
 
         return users.get(0);
     }
+
+
+    public AdminUserResponse deactivateUser(UUID userId) {
+
+    int updated = jdbcTemplate.update(
+        """
+        UPDATE public.users
+        SET user_status = false,
+            updated_at = NOW()
+        WHERE user_id = ?
+          AND user_status = true
+        """,
+        userId
+    );
+
+    if (updated == 0) {
+        if (getUserById(userId).userStatus()) {
+            throw new IllegalStateException("Unable to deactivate user");
+        }
+
+        throw new ResponseStatusException(
+            HttpStatus.CONFLICT,
+            "User account is already deactivated"
+        );
+    }
+
+    return getUserById(userId);
+}
 }
