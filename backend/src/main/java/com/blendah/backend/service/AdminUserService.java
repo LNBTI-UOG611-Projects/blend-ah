@@ -73,4 +73,63 @@ public class AdminUserService {
 
         return users.get(0);
     }
+
+
+    public AdminUserResponse deactivateUser(UUID userId) {
+
+    int updated = jdbcTemplate.update(
+        """
+        UPDATE public.users
+        SET user_status = false,
+            updated_at = NOW()
+        WHERE user_id = ?
+          AND user_status = true
+        """,
+        userId
+    );
+
+    if (updated == 0) {
+        if (getUserById(userId).userStatus()) {
+            throw new IllegalStateException("Unable to deactivate user");
+        }
+
+        throw new ResponseStatusException(
+            HttpStatus.CONFLICT,
+            "User account is already deactivated"
+        );
+    }
+
+    return getUserById(userId);
+    }
+
+
+public AdminUserResponse activateUser(UUID userId) {
+
+    int updated = jdbcTemplate.update(
+        """
+        UPDATE public.users
+        SET user_status = true,
+            updated_at = NOW()
+        WHERE user_id = ?
+          AND user_status = false
+        """,
+        userId
+    );
+
+    if (updated == 0) {
+        AdminUserResponse user = getUserById(userId);
+
+        if (user.userStatus()) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "User account is already active"
+            );
+        }
+
+        throw new IllegalStateException("Unable to activate user");
+    }
+
+    return getUserById(userId);
+    }
+
 }
