@@ -96,3 +96,26 @@
 .users-page .view-details-btn:hover {
   background: #e9e5ff;
 }
+
+
+.users-page .deactivate-btn {
+  margin-left: 8px;
+  padding: 8px 12px;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.users-page .deactivate-btn:hover {
+  background: #fee2e2;
+}
+
+.users-page .deactivate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
