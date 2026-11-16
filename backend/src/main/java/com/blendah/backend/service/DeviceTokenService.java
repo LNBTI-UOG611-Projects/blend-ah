@@ -170,4 +170,42 @@ public class DeviceTokenService {
         );
     }
 
+
+        @Transactional
+        public void removeDeviceToken(
+                UUID authenticatedUserId,
+                UUID installationId) {
+
+        // Verify the authenticated user exists.
+        if (authenticatedUserId == null ||
+                !userRepository.existsById(authenticatedUserId)) {
+
+                throw new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Authenticated user not found"
+                );
+        }
+
+        // Find the registered installation.
+        DeviceToken device = deviceTokenRepository
+                .findByInstallationId(installationId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Device installation not found"
+                ));
+
+        // Prevent users from deleting another user's device.
+        if (!device.getUserId().equals(authenticatedUserId)) {
+
+                throw new ResponseStatusException(
+                        HttpStatus.FORBIDDEN,
+                        "You cannot remove another user's device"
+                );
+        }
+
+        // Remove the device registration.
+        deviceTokenRepository.delete(device);
+        }
+
+
 }
