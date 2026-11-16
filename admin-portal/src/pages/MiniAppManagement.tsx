@@ -1,57 +1,73 @@
 
 import { useEffect, useState } from 'react'
+
 import Header from '../components/layout/Header'
 import MiniAppFilters from '../components/miniapps/MiniAppFilters'
 import MiniAppTable from '../components/miniapps/MiniAppTable'
 import MiniAppDetailsModal from '../components/miniapps/MiniAppDetailsModal'
 import AddMiniAppModal from '../components/miniapps/AddMiniAppModal'
-import { getMiniApps } from '../services/miniAppService'
+import EditMiniAppModal from '../components/miniapps/EditMiniAppModal'
+
+import {
+  getMiniApps,
+  updateMiniApp,
+} from '../services/miniAppService'
+
+import type { EditMiniAppData } from '../components/miniapps/EditMiniAppModal'
 import type { MiniApp } from '../types/miniApp'
+
 import './MiniAppManagement.css'
 
 export default function MiniAppManagement() {
   const [apps, setApps] = useState<MiniApp[]>([])
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState('ALL')
-  const [selectedApp, setSelectedApp] = useState<MiniApp | null>(null)
+
+  const [selectedApp, setSelectedApp] =
+    useState<MiniApp | null>(null)
+
+  const [editingApp, setEditingApp] =
+    useState<MiniApp | null>(null)
+
   const [showAddModal, setShowAddModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  async function loadApps() {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await getMiniApps()
+      setApps(data)
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Unable to load mini-apps'
+      )
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
-    let cancelled = false
-
-    async function loadApps() {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const data = await getMiniApps()
-
-        if (!cancelled) {
-          setApps(data)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : 'Unable to load mini-apps'
-          )
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadApps()
-
-    return () => {
-      cancelled = true
-    }
+    void loadApps().catch(() => {})
   }, [])
+
+  async function handleUpdateMiniApp(
+    appId: number,
+    data: EditMiniAppData
+  ) {
+    const updatedApp = await updateMiniApp(appId, data)
+
+    setApps((previous) =>
+      previous.map((app) =>
+        app.appId === appId ? updatedApp : app
+      )
+    )
+  }
 
   const filteredApps = apps.filter((app) => {
     const query = search.trim().toLowerCase()
@@ -155,6 +171,7 @@ export default function MiniAppManagement() {
               <MiniAppTable
                 apps={filteredApps}
                 onViewDetails={setSelectedApp}
+                onEdit={setEditingApp}
               />
 
               <div className="table-footer">
@@ -175,6 +192,16 @@ export default function MiniAppManagement() {
       {showAddModal && (
         <AddMiniAppModal
           onClose={() => setShowAddModal(false)}
+          onCreated={loadApps}
+        />
+      )}
+
+      {editingApp && (
+        <EditMiniAppModal
+          key={editingApp.appId}
+          app={editingApp}
+          onClose={() => setEditingApp(null)}
+          onSave={handleUpdateMiniApp}
         />
       )}
     </>

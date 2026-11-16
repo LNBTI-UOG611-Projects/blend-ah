@@ -1,16 +1,25 @@
 package com.blendah.backend.service;
 
 import com.blendah.backend.dto.MiniAppResponse;
+import com.blendah.backend.dto.MiniAppUpdateRequest;
 import com.blendah.backend.model.MiniApp;
 import com.blendah.backend.repository.MiniAppRepository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Locale;
 
 import com.blendah.backend.dto.MiniAppCreateRequest;
 import java.time.OffsetDateTime;
+
+
+import com.blendah.backend.dto.MiniAppUpdateRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 
 @Service
 public class MiniAppService {
@@ -67,6 +76,31 @@ public MiniAppResponse createMiniApp(MiniAppCreateRequest request) {
 
     return toResponse(savedApp);
 }
+
+public MiniAppResponse updateMiniApp(
+        Long id,
+        MiniAppUpdateRequest request) {
+
+    MiniApp app = repository.findById(id)
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Mini App not found"
+                )
+            );
+
+    app.setAppName(request.appName().trim());
+    app.setDescription(request.description());
+    app.setIconUrl(request.iconUrl());
+    app.setAppUrl(request.appUrl().trim());
+
+    app.setUpdatedAt(OffsetDateTime.now());
+
+    MiniApp updatedApp = repository.save(app);
+
+    return toResponse(updatedApp);
+}
+
 
 
     private MiniAppResponse toResponse(MiniApp app) {
