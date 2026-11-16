@@ -1,13 +1,16 @@
+
 import type { MiniApp } from '../../types/miniApp'
 
 type Props = {
   apps: MiniApp[]
   onViewDetails: (app: MiniApp) => void
+  onEdit: (app: MiniApp) => void
 }
 
 export default function MiniAppTable({
   apps,
   onViewDetails,
+  onEdit,
 }: Props) {
   return (
     <div className="table-wrapper">
@@ -43,15 +46,21 @@ export default function MiniAppTable({
 
                     <div>
                       <strong>{app.appName}</strong>
-                      <span>{app.description || 'No description'}</span>
+                      <span>
+                        {app.description || 'No description'}
+                      </span>
                     </div>
                   </div>
                 </td>
 
                 <td>
-                  <span className={`status-badge ${
-                    published ? 'status-active' : 'status-inactive'
-                  }`}>
+                  <span
+                    className={`status-badge ${
+                      published
+                        ? 'status-active'
+                        : 'status-inactive'
+                    }`}
+                  >
                     <span className="status-dot" />
                     {app.status}
                   </span>
@@ -66,18 +75,24 @@ export default function MiniAppTable({
                 <td>
                   <div className="table-actions">
                     <button
+                      type="button"
                       className="view-button"
                       onClick={() => onViewDetails(app)}
                     >
                       Details
                     </button>
 
-                    <button className="action-button" disabled
-                      title="Coming soon">
+                    <button
+                      type="button"
+                      className="action-button"
+                      onClick={() => onEdit(app)}
+                      title="Edit Mini-App"
+                    >
                       Edit
                     </button>
 
                     <button
+                      type="button"
                       className="action-button"
                       disabled
                       title="Coming soon"

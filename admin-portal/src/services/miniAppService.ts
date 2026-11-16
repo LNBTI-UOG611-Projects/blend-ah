@@ -46,3 +46,39 @@ export async function createMiniApp(
 
   return response.json() as Promise<MiniApp>
 }
+
+
+ // Data required to update an existing Mini-App
+export interface UpdateMiniAppRequest {
+  appName: string
+  description: string
+  iconUrl: string
+  appUrl: string
+}
+
+// Modify Existing Mini-App
+export async function updateMiniApp(
+  appId: number,
+  data: UpdateMiniAppRequest
+): Promise<MiniApp> {
+  const response = await fetch(
+    `/api/mini-apps/${appId}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify(data),
+    }
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to update mini-app (${response.status})`
+    )
+  }
+
+  return response.json() as Promise<MiniApp>
+}
+

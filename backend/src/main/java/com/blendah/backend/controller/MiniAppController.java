@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.blendah.backend.dto.MiniAppUpdateRequest;
 
 @RestController
 @RequestMapping("/api/mini-apps")
@@ -43,4 +44,17 @@ public class MiniAppController {
                 .status(HttpStatus.CREATED)
                 .body(created);
     }
+  
+    // Modify Existing Mini-App
+    @PutMapping("/{id}")
+    public ResponseEntity<MiniAppResponse> updateMiniApp(
+            @PathVariable Long id,
+            @Valid @RequestBody MiniAppUpdateRequest request) {
+
+        MiniAppResponse updated =
+                miniAppService.updateMiniApp(id, request);
+
+        return ResponseEntity.ok(updated);
+    }
+  
 }
