@@ -6,6 +6,7 @@ import com.blendah.backend.dto.DeviceTokenResponse;
 import com.blendah.backend.model.DeviceToken;
 import com.blendah.backend.repository.DeviceTokenRepository;
 import com.blendah.backend.repository.UserRepository;
+import com.blendah.backend.dto.DeviceTokenUpdateRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -101,4 +102,72 @@ public class DeviceTokenService {
                 saved.getUpdatedAt()
         );
     }
+
+
+    @Transactional
+    public DeviceTokenResponse updateDeviceToken(
+            UUID authenticatedUserId,
+            DeviceTokenUpdateRequest request) {
+
+        if (authenticatedUserId == null ||
+                !userRepository.existsById(authenticatedUserId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Authenticated user not found"
+            );
+        }
+
+        // Find the registered installation.
+        DeviceToken device = deviceTokenRepository
+                .findByInstallationId(request.installationId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Device installation not found"
+                ));
+
+        // Only the device's registered owner can update it.
+        if (!device.getUserId().equals(authenticatedUserId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You cannot update another user's device"
+            );
+        }
+
+        String newToken = request.fcmToken().trim();
+
+        if (newToken.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "FCM token cannot be empty"
+            );
+        }
+
+        // Check whether another installation already uses this token.
+        var existingToken = deviceTokenRepository
+                .findByFcmToken(newToken);
+
+        if (existingToken.isPresent() &&
+                !existingToken.get().getInstallationId()
+                        .equals(request.installationId())) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "FCM token is already registered to another installation"
+            );
+        }
+
+        device.setFcmToken(newToken);
+
+        DeviceToken saved = deviceTokenRepository.save(device);
+
+        return new DeviceTokenResponse(
+                saved.getDeviceId(),
+                saved.getUserId(),
+                saved.getInstallationId(),
+                saved.getDevicePlatform(),
+                saved.getCreatedAt(),
+                saved.getUpdatedAt()
+        );
+    }
+
 }
