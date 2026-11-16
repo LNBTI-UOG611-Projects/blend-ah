@@ -78,3 +78,21 @@
   background: #fee2e2;
   color: #dc2626;
 }
+
+
+
+.users-page .view-details-btn {
+  background: #f3f0ff;
+  color: #3730a3;
+  border: 1px solid #ddd6fe;
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.users-page .view-details-btn:hover {
+  background: #e9e5ff;
+}
