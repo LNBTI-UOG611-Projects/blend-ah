@@ -4,11 +4,9 @@ package com.blendah.backend.controller;
 import com.blendah.backend.dto.AdminUserResponse;
 import com.blendah.backend.service.AdminUserService;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/users")
@@ -23,5 +21,10 @@ public class AdminUserController {
     @GetMapping
     public List<AdminUserResponse> getAllUsers() {
         return adminUserService.getAllUsers();
+    }
+
+    @GetMapping("/{userId}")
+    public AdminUserResponse getUserById(@PathVariable UUID userId) {
+        return adminUserService.getUserById(userId);
     }
 }
