@@ -1,32 +1,20 @@
 
 import { useEffect, useState } from 'react'
+import { getUsers } from '../services/userService'
+import UserDetailsModal from '../components/users/UserDetailsModal'
+import type { User } from '../types/user'
 import './UserManagement.css'
-
-interface User {
-  userId: string
-  fullName: string
-  email: string
-  role: string
-  profileImageUrl: string | null
-  createdAt: string | null
-  userStatus: boolean
-}
 
 export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/admin/users')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch users')
-        }
-        return response.json()
-      })
-      .then((data: User[]) => setUsers(data))
+    getUsers()
+      .then(setUsers)
       .catch(() => setError('Unable to load users'))
       .finally(() => setLoading(false))
   }, [])
@@ -71,6 +59,7 @@ export default function UserManagement() {
                 <th>Role</th>
                 <th>Status</th>
                 <th>Registered</th>
+                <th>Actions</th>
               </tr>
             </thead>
 
@@ -81,13 +70,11 @@ export default function UserManagement() {
                   <td>{user.email}</td>
                   <td>{user.role}</td>
                   <td>
-                    <span
-                      className={
-                        user.userStatus
-                          ? 'status active'
-                          : 'status inactive'
-                      }
-                    >
+                    <span className={
+                      user.userStatus
+                        ? 'status active'
+                        : 'status inactive'
+                    }>
                       {user.userStatus ? 'Active' : 'Inactive'}
                     </span>
                   </td>
@@ -96,18 +83,34 @@ export default function UserManagement() {
                       ? new Date(user.createdAt).toLocaleDateString()
                       : '—'}
                   </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="view-details-btn"
+                      onClick={() => setSelectedUserId(user.userId)}
+                    >
+                      View Details
+                    </button>
+                  </td>
                 </tr>
               ))}
 
               {filteredUsers.length === 0 && (
                 <tr>
-                  <td colSpan={5}>No users found.</td>
+                  <td colSpan={6}>No users found.</td>
                 </tr>
               )}
             </tbody>
           </table>
         )}
       </div>
+
+      {selectedUserId && (
+        <UserDetailsModal
+          userId={selectedUserId}
+          onClose={() => setSelectedUserId(null)}
+        />
+      )}
     </div>
   )
 }

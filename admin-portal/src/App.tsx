@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import AdminLayout from './components/layout/AdminLayout'
 import MiniAppManagement from './pages/MiniAppManagement'
+import UserManagement from './pages/UserManagement'
 import './App.css'
 
 export default function App() {
@@ -11,6 +12,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/mini-apps" replace />} />
           <Route path="/mini-apps" element={<MiniAppManagement />} />
           <Route path="*" element={<Navigate to="/mini-apps" replace />} />
+          <Route path="/users" element={<UserManagement />} />
         </Route>
       </Routes>
     </BrowserRouter>
