@@ -24,28 +24,28 @@ public class MiniAppService {
         this.repository = repository;
     }
 
-    // View Mini App Listing
-    public List<MiniAppResponse> getMiniApps(String search) {
+    // View and Search Available Mini Apps
+public List<MiniAppResponse> getMiniApps(String search) {
 
-        String query = search == null
-                ? ""
-                : search.trim().toLowerCase(Locale.ROOT);
+    String query = search == null
+            ? ""
+            : search.trim().toLowerCase(Locale.ROOT);
 
-        return repository.findAll()
-                .stream()
-                .filter(app ->
-                    query.isEmpty()
-                    || app.getAppName()
+    return repository.findByStatusIgnoreCase("PUBLISHED")
+            .stream()
+            .filter(app ->
+                query.isEmpty()
+                || app.getAppName()
+                    .toLowerCase(Locale.ROOT)
+                    .contains(query)
+                || (app.getDescription() != null
+                    && app.getDescription()
                         .toLowerCase(Locale.ROOT)
-                        .contains(query)
-                    || (app.getDescription() != null
-                        && app.getDescription()
-                            .toLowerCase(Locale.ROOT)
-                            .contains(query))
-                )
-                .map(this::toResponse)
-                .toList();
-    }
+                        .contains(query))
+            )
+            .map(this::toResponse)
+            .toList();
+}
 
     // Add New Mini App
     public MiniAppResponse createMiniApp(
