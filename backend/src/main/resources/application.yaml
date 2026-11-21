@@ -24,3 +24,15 @@ spring:
 
 server:
   port: 8080
+
+  # Member 1 - authentication settings
+app:
+  jwt:
+    # At least 32 characters. Put the real value in backend/.env (JWT_SECRET=...)
+    secret: ${JWT_SECRET}
+    access-token-minutes: ${JWT_ACCESS_TOKEN_MINUTES:60}
+  security:
+    # false = admin & mini-app endpoints stay open (current behaviour, so the
+    # admin portal keeps working). Set ENFORCE_ADMIN_ROLES=true once the admin
+    # portal sends a login token.
+    enforce-admin-roles: ${ENFORCE_ADMIN_ROLES:false}
