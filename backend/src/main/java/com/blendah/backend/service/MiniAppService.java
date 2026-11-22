@@ -1,4 +1,3 @@
-
 package com.blendah.backend.service;
 
 import com.blendah.backend.dto.MiniAppCreateRequest;
@@ -24,14 +23,14 @@ public class MiniAppService {
         this.repository = repository;
     }
 
-    // View Mini App Listing
+    // 1. View and Search Published Mini Apps
     public List<MiniAppResponse> getMiniApps(String search) {
 
         String query = search == null
                 ? ""
                 : search.trim().toLowerCase(Locale.ROOT);
 
-        return repository.findAll()
+        return repository.findByStatusIgnoreCase("PUBLISHED")
                 .stream()
                 .filter(app ->
                     query.isEmpty()
@@ -47,7 +46,7 @@ public class MiniAppService {
                 .toList();
     }
 
-    // Add New Mini App
+    // 2. Add New Mini App
     public MiniAppResponse createMiniApp(
             MiniAppCreateRequest request) {
 
@@ -69,7 +68,7 @@ public class MiniAppService {
         return toResponse(savedApp);
     }
 
-    // Modify Existing Mini App
+    // 3. Modify Existing Mini App
     public MiniAppResponse updateMiniApp(
             Long id,
             MiniAppUpdateRequest request) {
@@ -85,7 +84,7 @@ public class MiniAppService {
         return toResponse(repository.save(app));
     }
 
-    // Publish Mini App
+    // 4. Publish Mini App
     public MiniAppResponse publishMiniApp(Long id) {
 
         MiniApp app = findMiniApp(id);
@@ -103,7 +102,7 @@ public class MiniAppService {
         return toResponse(repository.save(app));
     }
 
-    // Deactivate Mini App
+    // 5. Deactivate Mini App
     public MiniAppResponse deactivateMiniApp(Long id) {
 
         MiniApp app = findMiniApp(id);
@@ -121,8 +120,7 @@ public class MiniAppService {
         return toResponse(repository.save(app));
     }
 
-
-    // Activate an inactive Mini App
+    // 6. Activate Mini App
     public MiniAppResponse activateMiniApp(Long id) {
 
         MiniApp app = findMiniApp(id);
@@ -139,7 +137,6 @@ public class MiniAppService {
 
         return toResponse(repository.save(app));
     }
-
 
     // Find Mini App by ID
     private MiniApp findMiniApp(Long id) {
