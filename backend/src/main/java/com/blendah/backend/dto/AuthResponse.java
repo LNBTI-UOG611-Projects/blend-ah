@@ -1,4 +1,4 @@
-package main.java.com.blendah.backend.dto;
+package com.blendah.backend.dto;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package main.java.com.blendah.backend.exception;
+package com.blendah.backend.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -1,4 +1,4 @@
-package main.java.com.blendah.backend.exception;
+package com.blendah.backend.exception;
 
 import com.blendah.backend.controller.AuthController;
 import com.blendah.backend.controller.UserController;

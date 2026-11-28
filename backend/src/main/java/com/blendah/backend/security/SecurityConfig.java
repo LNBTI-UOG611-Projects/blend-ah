@@ -1,4 +1,4 @@
-package main.java.com.blendah.backend.security;
+package com.blendah.backend.security;
 
 import com.blendah.backend.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package main.java.com.blendah.backend.security;
+package com.blendah.backend.security;
 
 import org.springframework.stereotype.Component;
 

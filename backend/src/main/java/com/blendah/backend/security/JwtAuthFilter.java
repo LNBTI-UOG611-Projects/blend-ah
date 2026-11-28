@@ -1,4 +1,4 @@
-package main.java.com.blendah.backend.security;
+package com.blendah.backend.security;
 
 import com.blendah.backend.model.User;
 import com.blendah.backend.repository.UserRepository;
